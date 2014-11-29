@@ -10,28 +10,17 @@
 */
 
 $(document).ready(function() {
-	var world_ui = $('#world').get(0).getContext('2d');
-	var grid_ui = $('#grid').get(0).getContext('2d');
 
 	function Cell () {
 		this.age = 0; // Determines alpha of color
 		this.alive = false;
 	}
 	
-	function Life (world) {
-		this.cellColor = '#000000';
-		this.cellSize = 6;
-		this.w = 600;
-		this.h = 600;
-		this.frameDelay = 70;
-		this.world_ui = world_ui;
-		this.world_ui.fillStyle = this.cellColor;
-
-		
-		this.B = [3];
-		this.S = [2, 3];
-		this.rows = this.h / this.cellSize;
-		this.cols = this.w / this.cellSize;
+	function Life (rows, cols) {
+		this.B = [3]; // B(orn)
+		this.S = [2, 3]; // S(tay alive)
+		this.rows = rows;
+		this.cols = cols;
 		this.world = [];
 		this.world2 = [];
 		this.generation = 0;
@@ -59,13 +48,34 @@ $(document).ready(function() {
 		}
 
 		this.load("GOSPER_GLIDER_GUN");
-		this.paint();
-		this.step();
+	}
+
+	Life.prototype.get = function (x, y) {
+		return this.world[x][y].alive;
+	}
+
+	Life.prototype.set = function (x, y) {
+		this.world[x][y].alive = true;
+	}
+
+	Life.prototype.unset = function (x, y) {
+		this.world[x][y].alive = false;
+	}
+
+	Life.prototype.clear = function () {
+		for (var x = 0; x < this.rows; ++x) {
+			for (var y = 0; y < this.cols; ++y) {
+				this.world[x][y].alive = false;
+				this.world[x][y].age = 0;
+			}
+		}
+		this.generation = 0;
 	}
 
 	Life.prototype.getNeighbourCount = function (x, y) {
 		var ncount = 0;
 
+		// Bounded grid
 		/* // Left
 		if (this.world[x-1] && this.world[x-1][y].alive) { ++ncount; }
 		if (this.world[x-1] && this.world[x-1][y-1] && this.world[x-1][y-1].alive) { ++ncount; }
@@ -78,6 +88,7 @@ $(document).ready(function() {
 		if (this.world[x+1] && this.world[x+1][y-1] && this.world[x+1][y-1].alive) { ++ncount; }
 		if (this.world[x+1] && this.world[x+1][y+1] && this.world[x+1][y+1].alive) { ++ncount; } */
 
+		// Toroidal grid
 		var x1 = (x > 0)? x: this.cols;
 		var y1 = (y > 0)? y: this.rows;
 		// Left
@@ -123,18 +134,16 @@ $(document).ready(function() {
 		var temp = this.world;
 		this.world = this.world2;
 		this.world2 = temp;
-
-		this.paint();
-		setTimeout(this.step.bind(this), this.frameDelay);
+		this.generation++;
 	}
 
 	Life.prototype.paint = function () {
-		this.world_ui.clearRect(0, 0, this.w * this.cellSize, this.h * this.cellSize);
+		this.world_ui.clearRect(0, 0, this.w, this.h);
 		for (var x = 0; x < this.rows; ++x) {
 			for (var y = 0; y < this.cols; ++y) {
-				this.world_ui.beginPath();
-				this.world_ui.rect(x*this.cellSize, y*this.cellSize, this.cellSize, this.cellSize);
 				if (this.world[x][y].alive) {
+					this.world_ui.beginPath();
+					this.world_ui.rect(x*this.cellSize, y*this.cellSize, this.cellSize, this.cellSize);
             		this.world_ui.fill();
 				}
 			}
@@ -148,27 +157,71 @@ $(document).ready(function() {
 	    }, this);
 	}
 
-	function drawGrid() {
-		grid_ui.strokeStyle = '#CCCCCC';
-		grid_ui.lineWidth = 1;
+	function Ui () {
+		this.w = 600;
+		this.h = 600;
+		this.cellSize = 6;
+		this.cellColor = '#000000';
+		this.gridColor = '#CCCCCC';
+		this.bgColor = '#FFFFFF';
+		this.gridStroke = 1;
+		this.frameDelay = 100; // ms
 
-		for (var x = 0; x <= 600; x += 6) {
-			grid_ui.beginPath();
-			grid_ui.moveTo(0, x);
-			grid_ui.lineTo(600, x);
-			grid_ui.stroke();
-		}
-		for (var y = 0; y <= 600; y += 6) {
-			grid_ui.beginPath();
-			grid_ui.moveTo(y, 0);
-			grid_ui.lineTo(y, 600);
-			grid_ui.stroke();
-		}
+		this.world_ui = $('#world').get(0).getContext('2d');
+		this.grid_ui = $('#grid').get(0).getContext('2d');
+		this.world_ui.fillStyle = this.cellColor;
+		this.world_ui.strokeStyle  = this.bgColor;
+		this.grid_ui.fillStyle = this.bgColor;
+		this.grid_ui.strokeStyle = this.gridColor;
+		this.grid_ui.lineWidth = this.gridStroke;
 
+		this.rows = this.h / this.cellSize;
+		this.cols = this.w / this.cellSize;
+
+		this.paintGrid();
+		this.life = new Life (this.rows, this.cols);
+		this.life.init();
+		this.paint();
 	}
 
-	drawGrid();
-	var life = new Life();
-	life.init();
+	Ui.prototype.paint = function () {
+		this.world_ui.clearRect(0, 0, this.w, this.h);
+		for (var x = 0; x < this.rows; ++x) {
+			for (var y = 0; y < this.cols; ++y) {
+				if (this.life.get(x,y)) {
+					this.world_ui.beginPath();
+					this.world_ui.rect(x*this.cellSize, y*this.cellSize, this.cellSize, this.cellSize);
+            		this.world_ui.fill();
+				}
+			}
+		}
+	}
+
+	Ui.prototype.update = function () {
+		this.life.step();
+		this.paint();
+		setTimeout(this.update.bind(this), this.frameDelay);
+	}
+
+	Ui.prototype.paintGrid = function () {
+		this.grid_ui.beginPath();
+		this.grid_ui.rect(0, 0, this.w, this.h);
+		this.grid_ui.fill();
+		for (var x = 0; x <= this.w; x += this.cellSize) {
+			this.grid_ui.beginPath();
+			this.grid_ui.moveTo(0, x);
+			this.grid_ui.lineTo(this.w, x);
+			this.grid_ui.stroke();
+		}
+		for (var y = 0; y <= this.h; y += this.cellSize) {
+			this.grid_ui.beginPath();
+			this.grid_ui.moveTo(y, 0);
+			this.grid_ui.lineTo(y, this.h);
+			this.grid_ui.stroke();
+		}
+	}
+
+	var ui = new Ui();
+	ui.update();
 
 });
