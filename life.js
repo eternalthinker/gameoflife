@@ -11,6 +11,7 @@
 
 $(document).ready(function() {
 
+    /* ================== Life class ================ */
     function Cell () {
         this.age = 0; // Determines alpha of color
         this.alive = false;
@@ -34,14 +35,17 @@ $(document).ready(function() {
                 [35, 3],[35, 4],[36, 3],[36, 4]
             ]
         });
+
+        // Actions
+        this.init();
     }
 
     Life.prototype.init = function () {
         // Initialize world cells
-        for (var x = 0; x < this.rows; ++x) {
+        for (var x = 0; x < this.cols; ++x) {
             this.world[x] = [];
             this.world2[x] = [];
-            for (var y = 0; y < this.cols; ++y) {
+            for (var y = 0; y < this.rows; ++y) {
                 this.world[x][y] = new Cell();
                 this.world2[x][y] = new Cell();
             }
@@ -63,8 +67,8 @@ $(document).ready(function() {
     }
 
     Life.prototype.clear = function () {
-        for (var x = 0; x < this.rows; ++x) {
-            for (var y = 0; y < this.cols; ++y) {
+        for (var x = 0; x < this.cols; ++x) {
+            for (var y = 0; y < this.rows; ++y) {
                 this.world[x][y].alive = false;
                 this.world[x][y].age = 0;
             }
@@ -107,8 +111,8 @@ $(document).ready(function() {
     }
 
     Life.prototype.step = function () {
-        for (var x = 0; x < this.rows; ++x) {
-            for (var y = 0; y < this.cols; ++y) {
+        for (var x = 0; x < this.cols; ++x) {
+            for (var y = 0; y < this.rows; ++y) {
                 var ncount = this.getNeighbourCount(x, y);
                 if (this.world[x][y].alive) {
                     var find = this.S.indexOf(ncount);
@@ -143,16 +147,52 @@ $(document).ready(function() {
             this.world[point[0]][point[1]].alive = true;
         }, this);
     }
+    /* ================== End of Life class ================ */
 
+
+    /* ================== Ui class ================ */
     function Ui () {
-        this.w = 600;
+        this.$run_btn = $('#run');
+        this.$step_btn = $('#step');
+        this.$pause_btn = $('#pause');
+        this.$slider_ui = $('#slider');
+        this.slider_values = [1000, 200, 120, 70, 10];
+        this.$grid_chk = $('#grid-switch');
+        this.$grid = $('#grid');
+
+        this.$run_btn.click($.proxy(this.run, this));
+        this.$step_btn.click($.proxy(this.step_update, this));
+        this.$pause_btn.click($.proxy(this.pause, this)); 
+        if (this.$slider_ui.length > 0) {
+          this.$slider_ui.slider({
+            min: 1,
+            max: 5,
+            value: 4,
+            orientation: "horizontal",
+            range: "min",
+            slide: $.proxy(function (event, ui) {
+                this.frameDelay = this.slider_values[ui.value - 1];
+            }, this)
+          }).addSliderSegments(this.$slider_ui.slider("option").max);
+        }
+        this.$grid_chk.bootstrapSwitch('state', true);
+        this.$grid_chk.on('switchChange.bootstrapSwitch', $.proxy(function (event, state) {
+          if (state) {
+            this.$grid.show();
+          } else {
+            this.$grid.hide();
+          }
+        }, this));
+
+        this.w = 750;
         this.h = 600;
-        this.cellSize = 6;
+        this.cellSize = 5;
         this.cellColor = '#000000';
         this.gridColor = '#CCCCCC';
         this.bgColor = '#FFFFFF';
-        this.gridStroke = 1;
-        this.frameDelay = 100; // ms
+        this.gridStroke = 0.5;
+        this.frameDelay = 70; // ms
+        this.frameTimer;
 
         this.world_ui = $('#world').get(0).getContext('2d');
         this.grid_ui = $('#grid').get(0).getContext('2d');
@@ -165,16 +205,38 @@ $(document).ready(function() {
         this.rows = this.h / this.cellSize;
         this.cols = this.w / this.cellSize;
 
+
+        this.$run_btn.prop('disabled', false);
+        this.$step_btn.prop('disabled', false);
+        this.$pause_btn.prop('disabled', true);
         this.paintGrid();
         this.life = new Life (this.rows, this.cols);
-        this.life.init();
         this.paint();
+    }
+
+    Ui.prototype.run = function () {
+        this.update();
+        this.$run_btn.prop('disabled', true);
+        this.$step_btn.prop('disabled', true);
+        this.$pause_btn.prop('disabled', false);
+    }
+
+    Ui.prototype.step_update = function () {
+        this.life.step();
+        this.paint();
+    }
+
+    Ui.prototype.pause = function () {
+        clearTimeout(this.frameTimer);
+        this.$run_btn.prop('disabled', false);
+        this.$step_btn.prop('disabled', false);
+        this.$pause_btn.prop('disabled', true);
     }
 
     Ui.prototype.paint = function () {
         this.world_ui.clearRect(0, 0, this.w, this.h);
-        for (var x = 0; x < this.rows; ++x) {
-            for (var y = 0; y < this.cols; ++y) {
+        for (var x = 0; x < this.cols; ++x) {
+            for (var y = 0; y < this.rows; ++y) {
                 if (this.life.get(x,y)) {
                     this.world_ui.beginPath();
                     this.world_ui.rect(x*this.cellSize, y*this.cellSize, this.cellSize, this.cellSize);
@@ -187,28 +249,48 @@ $(document).ready(function() {
     Ui.prototype.update = function () {
         this.life.step();
         this.paint();
-        setTimeout(this.update.bind(this), this.frameDelay);
+        this.frameTimer = setTimeout(this.update.bind(this), this.frameDelay);
     }
 
     Ui.prototype.paintGrid = function () {
-        this.grid_ui.beginPath();
-        this.grid_ui.rect(0, 0, this.w, this.h);
-        this.grid_ui.fill();
+        //this.grid_ui.beginPath();
+        //this.grid_ui.rect(0, 0, this.w, this.h);
+        //this.grid_ui.fill();
         for (var x = 0; x <= this.w; x += this.cellSize) {
             this.grid_ui.beginPath();
-            this.grid_ui.moveTo(0, x);
-            this.grid_ui.lineTo(this.w, x);
+            this.grid_ui.moveTo(x, 0);
+            this.grid_ui.lineTo(x, this.h);
             this.grid_ui.stroke();
         }
         for (var y = 0; y <= this.h; y += this.cellSize) {
             this.grid_ui.beginPath();
-            this.grid_ui.moveTo(y, 0);
-            this.grid_ui.lineTo(y, this.h);
+            this.grid_ui.moveTo(0, y);
+            this.grid_ui.lineTo(this.w, y);
             this.grid_ui.stroke();
         }
     }
+    /* ================== End of Ui class ================ */
 
+
+    // Add segments to a slider
+    $.fn.addSliderSegments = function (amount, orientation) {
+        return this.each(function () {
+            if (orientation == "vertical") {
+              var output = ''
+              , i;
+              for (i = 1; i <= amount - 2; i++) {
+                output += '<div class="ui-slider-segment" style="top:' + 100 / (amount - 1) * i + '%;"></div>';
+            };
+            $(this).prepend(output);
+            } else {
+                var segmentGap = 100 / (amount - 1) + "%"
+                , segment = '<div class="ui-slider-segment" style="margin-left: ' + segmentGap + ';"></div>';
+                $(this).prepend(segment.repeat(amount - 2));
+            }
+        });
+    };
+
+    // Actions
     var ui = new Ui();
-    ui.update();
 
 });

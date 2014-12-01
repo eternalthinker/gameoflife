@@ -8,7 +8,7 @@ A JavaScript implementation of Conway's Game of Life
 **TODO:**
 
 - [x] Basic Life and Canvas drawing modules
-- [ ] Essential Ui buttons and feedback
+- [ ] Essential Ui buttons and Info (generations etc)
 - [ ] Ability to draw cells
 - [ ] More complex coloring patterns based on generations
 - [ ] Advanced fluid ability to draw cells

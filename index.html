@@ -13,6 +13,8 @@
     
     <!-- Bootstrap -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/flat-ui.min.css">
+    <link rel="stylesheet" href="css/fontello.css">
     <link rel="stylesheet" href="css/style.css">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -26,11 +28,12 @@
     <script src="js/jquery-1.11.1.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/flat-ui.min.js"></script>
     <script src="life.js"></script>
 </head>
 
 <body>
-  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" id="main-navigation">
+  <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" id="main-navigation">
     <div class="container-fluid">
       <div class="navbar-header">
         <a class="navbar-brand" href="#">Game of Life</a>
@@ -57,29 +60,57 @@
   <div class="container-fluid">
 
     <div class="row">
-      <div class="col-md-12">
-        <div id="canvas-container" style="position:relative; height: 600px;">
-          <canvas id="world" height="600" width="600" style="position:absolute; top:0; left:0; z-index:2;"></canvas>
-          <canvas id="grid" height="600" width="600" style="position:absolute; top:0; left:0; z-index:1;"></canvas>
+      <div class="col-lg-8 col-md-10 col-sm-12">
+        <div id="canvas-container" style="position:relative; height:600px; width:750px; border:1px solid #CCCCCC;">
+          <canvas id="world" height="600" width="750" style="position:absolute; top:0; left:0; z-index:1;"></canvas>
+          <canvas id="grid" height="600" width="750" style="position:absolute; top:0; left:0; z-index:2;"></canvas>
+        </div>
+      </div>
+      <div class="text-left col-lg-4 col-md-2 col-xs-8">
+        <div class="row">
+          <div class="col-xs-12" style="margin-top:0px;">
+            <button type="button" id="run" class="btn btn-default btn-success"><span class="fui-play"></span></button>
+            <button type="button" id="step" class="btn btn-default btn-primary"><span class="fui-arrow-right"></span></button>
+            <button type="button" id="pause" class="btn btn-default btn-warning" disabled><span class="fui-pause"></span></button>
+            <hr/>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            <button type="button" id="pencil" class="btn btn-default btn-inverse" disabled><span class="icon-pencil"></span></button>
+            <button type="button" id="eraser" class="btn btn-default btn-inverse" disabled><span class="icon-eraser"></span></button>
+            <button type="button" id="clear" class="btn btn-default btn-danger" disabled><span class="icon-clear"></span></button>
+            <hr/>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            <label style="margin-top:0px;">Speed</label>
+            <div id="slider" class="ui-slider"></div>
+            <hr/>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            <label style="margin-top:10px;" class="mrl">Grid</label>
+            <input type="checkbox" checked data-toggle="switch" name="default-switch-colors" data-on-color="primary" data-off-color="default" id="grid-switch" />
+          </div>
         </div>
       </div>
     </div>
-
 
     <div class="row">
       <div class="col-md-12">
       <article id="about">
         <section>
-          <h2>About</h2>
+          <h3>About</h3>
           <p>
             Conway's <em>Game of Life</em> is a cellular automaton.
           </p>
         </section>
       </article>
+      </div>
     </div>
-    </div>
-
-    <div class="row" style="margin-top:40px"></div>
 
     </div> <!-- main container -->
 
