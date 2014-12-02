@@ -9,9 +9,11 @@ A JavaScript implementation of Conway's Game of Life
 
 - [x] Basic Life and Canvas drawing modules
 - [x] Essential Ui buttons and Info (generations etc)
-- [ ] Ability to draw cells
+- [x] Ability to draw cells
+- [ ] Tooltips where necessary
+- [ ] Lifeform load selection
 - [ ] More complex coloring patterns based on generations
-- [ ] Advanced fluid ability to draw cells
+- [x] Advanced fluid ability to draw cells
 - [ ] Ability to change B/S automata rule
 - [ ] Info and background
 

@@ -51,8 +51,6 @@ $(document).ready(function() {
                 this.world2[x][y] = new Cell();
             }
         }
-
-        this.load("GOSPER_GLIDER_GUN");
     }
 
     Life.prototype.get = function (x, y) {
@@ -147,6 +145,7 @@ $(document).ready(function() {
         
     Life.prototype.load = function (lifeForm) {
         var lifeDef = this.Lifeforms[lifeForm];
+        this.population = 0;
         lifeDef.forEach(function(point) {
             this.world[point[0]][point[1]].alive = true;
             this.population++;
@@ -157,19 +156,38 @@ $(document).ready(function() {
 
     /* ================== Ui class ================ */
     function Ui () {
+        // Ui components
         this.$run_btn = $('#run');
         this.$step_btn = $('#step');
         this.$pause_btn = $('#pause');
+        this.$pencil_btn = $('#pencil');
+        this.$eraser_btn = $('#eraser');
+        this.$clear_btn = $('#clear');
         this.$slider_ui = $('#slider');
-        this.slider_values = [1000, 200, 120, 70, 10];
+        this.slider_values = [1000, 120, 70, 10, 1];
         this.$grid_chk = $('#grid-switch');
-        this.$grid = $('#grid');
+        this.$grid_cnvs = $('#grid');
+        this.$world_cnvs = $('#world');
+        this.world_cnvs = $('#world').get(0);
         this.$generation_ui = $('#generation');
         this.$population_ui = $('#population');
 
+        // Ui component handlers
         this.$run_btn.click($.proxy(this.run, this));
         this.$step_btn.click($.proxy(this.step_update, this));
         this.$pause_btn.click($.proxy(this.pause, this)); 
+        this.$pencil_btn.click($.proxy(function() {
+            this.curTool = this.Tool.PENCIL;
+            this.$pencil_btn.prop('disabled', true);
+            this.$eraser_btn.prop('disabled', false);
+        }, this));
+        this.$eraser_btn.click($.proxy(function() {
+            this.curTool = this.Tool.ERASER;
+            this.$pencil_btn.prop('disabled', false);
+            this.$eraser_btn.prop('disabled', true);
+        }, this));
+        this.$clear_btn.click($.proxy(this.clearWorld, this));
+
         if (this.$slider_ui.length > 0) {
           this.$slider_ui.slider({
             min: 1,
@@ -185,20 +203,40 @@ $(document).ready(function() {
         this.$grid_chk.bootstrapSwitch('state', true);
         this.$grid_chk.on('switchChange.bootstrapSwitch', $.proxy(function (event, state) {
           if (state) {
-            this.$grid.show();
+            this.$grid_cnvs.show();
           } else {
-            this.$grid.hide();
+            this.$grid_cnvs.hide();
           }
         }, this));
 
+        // Mouse handlers
+        this.$grid_cnvs.mousedown($.proxy(function (event) { this.onMouseDown(event); }, this));
+        this.$grid_cnvs.mouseup($.proxy(function (event) { this.onMouseUp(event); }, this));
+        this.$grid_cnvs.mousemove($.proxy(function (event) { this.onMouseMove(event); }, this));
+        this.$grid_cnvs.mouseout($.proxy(function (event) { this.onMouseOut(event); }, this));
+        this.$world_cnvs.mousedown($.proxy(function (event) { this.onMouseDown(event); }, this));
+        this.$world_cnvs.mouseup($.proxy(function (event) { this.onMouseUp(event); }, this));
+        this.$world_cnvs.mousemove($.proxy(function (event) { this.onMouseMove(event); }, this));
+        this.$world_cnvs.mouseout($.proxy(function (event) { this.onMouseOut(event); }, this));
+
+        // Drawing related variables
+        this.drawing = false;
+        this.dragging = false;
+        this.Tool = Object.freeze({
+            PENCIL: 1,
+            ERASER: 2
+        });
+        this.curTool = this.Tool.PENCIL;
+
+        // Life appearance variables
         this.w = 750;
         this.h = 600;
-        this.cellSize = 5;
+        this.cellSize = 6;
         this.cellColor = '#000000';
         this.gridColor = '#CCCCCC';
         this.bgColor = '#FFFFFF';
-        this.gridStroke = 0.5;
-        this.frameDelay = 120; // ms
+        this.gridStroke = 1;
+        this.frameDelay = 70; // ms
         this.frameTimer;
 
         this.world_ui = $('#world').get(0).getContext('2d');
@@ -212,12 +250,88 @@ $(document).ready(function() {
         this.rows = this.h / this.cellSize;
         this.cols = this.w / this.cellSize;
 
-
+        // Actions
         this.$run_btn.prop('disabled', false);
         this.$step_btn.prop('disabled', false);
         this.$pause_btn.prop('disabled', true);
+        this.$pencil_btn.prop('disabled', true);
+        this.$eraser_btn.prop('disabled', false);
         this.paintGrid();
         this.life = new Life (this.rows, this.cols);
+        this.life.load("GOSPER_GLIDER_GUN");
+        this.paint();
+    }
+
+    Ui.prototype.getPixelpoint = function (coords) {
+        return { x: Math.floor(coords.x/this.cellSize), y: Math.floor(coords.y/this.cellSize) };
+    }
+
+    Ui.prototype.onMouseDown = function (event) {
+        this.drawing = true;
+        // var point = this.getPixelpoint(this.world_cnvs.relMouseCoords(event));
+    }
+
+    Ui.prototype.onMouseUp = function (event) {
+        if (this.drawing) {
+            this.drawing = false;
+            if (this.dragging) { // No mouse up action if mouse was being dragged
+                this.dragging = false;
+            }
+            else {
+                var point = this.getPixelpoint(this.world_cnvs.relMouseCoords(event));
+                if (this.curTool === this.Tool.PENCIL) {
+                    if (! this.life.get(point.x, point.y)) {
+                        this.setCell(point.x, point.y);
+                    } else {
+                        this.unsetCell(point.x, point.y); // Live cell; click to unset
+                    }
+                }
+                else { // this.curTool.ERASER
+                    this.unsetCell(point.x, point.y);
+                }
+            }
+        }
+    }
+
+    Ui.prototype.onMouseMove = function (event) {
+        if (this.drawing) {
+            this.dragging = true;
+            var point = this.getPixelpoint(this.world_cnvs.relMouseCoords(event));
+            if (this.curTool === this.Tool.PENCIL) {
+                this.setCell(point.x, point.y);
+            }
+            else { // this.curTool.ERASER
+                this.unsetCell(point.x, point.y);
+            }
+        }
+    }
+
+    Ui.prototype.onMouseOut = function (event) {
+        if (this.drawing) {
+            this.drawing = false;
+            this.dragging = false;
+            // var point = this.getPixelpoint(this.world_cnvs.relMouseCoords(event));
+        }
+    }
+
+    Ui.prototype.setCell = function (x, y) {
+        if (this.life.get(x,y)) return;
+        this.life.set(x, y);
+        this.world_ui.beginPath();
+        this.world_ui.rect(x*this.cellSize, y*this.cellSize, this.cellSize, this.cellSize);
+        this.world_ui.fill();
+    }
+
+    Ui.prototype.unsetCell = function (x, y) {
+        if (! this.life.get(x,y)) return;
+        this.life.unset(x, y);
+        this.world_ui.clearRect(x*this.cellSize, y*this.cellSize, this.cellSize, this.cellSize);
+    }
+
+    Ui.prototype.clearWorld = function (x, y) {
+        this.pause();
+        this.life.clear();
+        this.life.load("GOSPER_GLIDER_GUN");
         this.paint();
     }
 
@@ -251,8 +365,8 @@ $(document).ready(function() {
                 }
             }
         }
-        this.$generation_ui.text("Generation: " + this.life.generation);
-        this.$population_ui.text("Population: " + this.life.population);
+        this.$generation_ui.text(this.life.generation);
+        this.$population_ui.text(this.life.population);
     }
 
     Ui.prototype.update = function () {
@@ -299,7 +413,28 @@ $(document).ready(function() {
         });
     };
 
+    // Retrieve mouse coordinates relative to the canvas element
+    function relMouseCoords(event){
+        var totalOffsetX = 0;
+        var totalOffsetY = 0;
+        var canvasX = 0;
+        var canvasY = 0;
+        var currentElement = this;
+
+        do {
+            totalOffsetX += currentElement.offsetLeft - currentElement.scrollLeft;
+            totalOffsetY += currentElement.offsetTop - currentElement.scrollTop;
+        }
+        while(currentElement = currentElement.offsetParent);
+
+        canvasX = event.pageX - totalOffsetX;
+        canvasY = event.pageY - totalOffsetY;
+
+        return {x:canvasX, y:canvasY};
+    }
+
     // Actions
+    HTMLCanvasElement.prototype.relMouseCoords = relMouseCoords;
     var ui = new Ui();
 
 });
