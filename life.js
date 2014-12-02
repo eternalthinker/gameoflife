@@ -25,6 +25,7 @@ $(document).ready(function() {
         this.world = [];
         this.world2 = [];
         this.generation = 0;
+        this.population = 0;
 
         this.Lifeforms = Object.freeze({
             GOSPER_GLIDER_GUN: [
@@ -111,6 +112,7 @@ $(document).ready(function() {
     }
 
     Life.prototype.step = function () {
+        this.population = 0
         for (var x = 0; x < this.cols; ++x) {
             for (var y = 0; y < this.rows; ++y) {
                 var ncount = this.getNeighbourCount(x, y);
@@ -118,6 +120,7 @@ $(document).ready(function() {
                     var find = this.S.indexOf(ncount);
                     if (find != -1) {
                         this.world2[x][y].alive = true; 
+                        this.population++;
                     } else {
                         this.world2[x][y].alive = false;
                     }
@@ -126,6 +129,7 @@ $(document).ready(function() {
                     var find = this.B.indexOf(ncount);
                     if (find != -1) {
                         this.world2[x][y].alive = true; 
+                        this.population++;
                     } 
                     else {
                         this.world2[x][y].alive = false;
@@ -145,6 +149,7 @@ $(document).ready(function() {
         var lifeDef = this.Lifeforms[lifeForm];
         lifeDef.forEach(function(point) {
             this.world[point[0]][point[1]].alive = true;
+            this.population++;
         }, this);
     }
     /* ================== End of Life class ================ */
@@ -159,6 +164,8 @@ $(document).ready(function() {
         this.slider_values = [1000, 200, 120, 70, 10];
         this.$grid_chk = $('#grid-switch');
         this.$grid = $('#grid');
+        this.$generation_ui = $('#generation');
+        this.$population_ui = $('#population');
 
         this.$run_btn.click($.proxy(this.run, this));
         this.$step_btn.click($.proxy(this.step_update, this));
@@ -167,7 +174,7 @@ $(document).ready(function() {
           this.$slider_ui.slider({
             min: 1,
             max: 5,
-            value: 4,
+            value: 3,
             orientation: "horizontal",
             range: "min",
             slide: $.proxy(function (event, ui) {
@@ -191,7 +198,7 @@ $(document).ready(function() {
         this.gridColor = '#CCCCCC';
         this.bgColor = '#FFFFFF';
         this.gridStroke = 0.5;
-        this.frameDelay = 70; // ms
+        this.frameDelay = 120; // ms
         this.frameTimer;
 
         this.world_ui = $('#world').get(0).getContext('2d');
@@ -244,6 +251,8 @@ $(document).ready(function() {
                 }
             }
         }
+        this.$generation_ui.text("Generation: " + this.life.generation);
+        this.$population_ui.text("Population: " + this.life.population);
     }
 
     Ui.prototype.update = function () {

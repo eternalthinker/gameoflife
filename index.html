@@ -58,17 +58,30 @@
   </nav>
 
   <div class="container-fluid">
-
     <div class="row">
+      <!-- Canvas and info -->
       <div class="col-lg-8 col-md-10 col-sm-12">
-        <div id="canvas-container" style="position:relative; height:600px; width:750px; border:1px solid #CCCCCC;">
-          <canvas id="world" height="600" width="750" style="position:absolute; top:0; left:0; z-index:1;"></canvas>
-          <canvas id="grid" height="600" width="750" style="position:absolute; top:0; left:0; z-index:2;"></canvas>
+        <div class="row">
+          <div class="col-xs-12">
+            <div id="canvas-container" style="position:relative; height:600px; width:750px; border:1px solid #CCCCCC;">
+              <canvas id="world" height="600" width="750" style="position:absolute; top:0; left:0; z-index:1;"></canvas>
+              <canvas id="grid" height="600" width="750" style="position:absolute; top:0; left:0; z-index:2;"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            <span class="label label-info" id="generation">Generation: 0</span>
+            <span class="label label-info" id="population">Popultion: 0</span>
+          </div>
         </div>
       </div>
+      <!-- End of Canvas and info -->
+
+      <!-- Controls and Tools -->
       <div class="text-left col-lg-4 col-md-2 col-xs-8">
         <div class="row">
-          <div class="col-xs-12" style="margin-top:0px;">
+          <div class="col-xs-12" style="margin-top:10px;">
             <button type="button" id="run" class="btn btn-default btn-success"><span class="fui-play"></span></button>
             <button type="button" id="step" class="btn btn-default btn-primary"><span class="fui-arrow-right"></span></button>
             <button type="button" id="pause" class="btn btn-default btn-warning" disabled><span class="fui-pause"></span></button>
@@ -77,9 +90,11 @@
         </div>
         <div class="row">
           <div class="col-xs-12">
-            <button type="button" id="pencil" class="btn btn-default btn-inverse" disabled><span class="icon-pencil"></span></button>
+            <div class="btn-group" role="toolbar" aria-label="toolbar">
+            <button type="button" id="pencil" class="btn btn-default btn-info" disabled><span class="icon-pencil"></span></button>
             <button type="button" id="eraser" class="btn btn-default btn-inverse" disabled><span class="icon-eraser"></span></button>
             <button type="button" id="clear" class="btn btn-default btn-danger" disabled><span class="icon-clear"></span></button>
+            </div>
             <hr/>
           </div>
         </div>
@@ -97,9 +112,10 @@
           </div>
         </div>
       </div>
-    </div>
+      <!-- End of Controls and Tools -->
+    </div> <!-- END core content row -->
 
-    <div class="row">
+    <div class="row"> <!-- About row -->
       <div class="col-md-12">
       <article id="about">
         <section>
@@ -111,8 +127,7 @@
       </article>
       </div>
     </div>
-
-    </div> <!-- main container -->
+    </div> <!-- END main container -->
 
 </body>  
   
