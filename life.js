@@ -267,6 +267,7 @@ $(document).ready(function() {
     }
 
     Ui.prototype.onMouseDown = function (event) {
+        event.originalEvent.preventDefault(); // Chrome drag text cursor fix
         this.drawing = true;
         // var point = this.getPixelpoint(this.world_cnvs.relMouseCoords(event));
     }
