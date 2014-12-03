@@ -57,13 +57,13 @@
     </div>
   </nav>
 
-  <div class="container-fluid">
+  <div class="container">
     <div class="row">
       <!-- Canvas and info -->
-      <div class="col-lg-8 col-md-10 col-sm-12">
+      <div class="col-lg-8 col-md-12 col-sm-12">
         <div class="row">
           <div class="col-xs-12">
-            <div id="canvas-container" style="position:relative; height:600px; width:750px; border:0.5px solid #CCCCCC;">
+            <div id="canvas-container" class="center-block" style="position:relative; height:600px; width:750px; border:0.5px solid #CCCCCC;">
               <canvas id="grid" height="600" width="750" style="position:absolute; top:0; left:0; z-index:2;"></canvas>
               <canvas id="world" height="600" width="750" style="position:absolute; top:0; left:0; z-index:1;"></canvas>
             </div>
@@ -71,48 +71,89 @@
         </div>
         <div class="row">
           <div class="col-xs-12">
-            <span class="label label-info">Generation: <span id="generation"></span></span>
-            <span class="label label-info">Popultion: <span id="population"></span></span>
+            <div class="center-block" style="width:750px;">
+              <span class="label label-info">Generation: <span id="generation"></span></span>
+              <span class="label label-info">Popultion: <span id="population"></span></span>
+            </div>
           </div>
         </div>
       </div>
       <!-- End of Canvas and info -->
 
       <!-- Controls and Tools -->
-      <div class="text-left col-lg-4 col-md-2 col-xs-8">
+      <div class="text-left col-lg-4 col-lg-offset-0 col-md-6 col-md-offset-3 col-xs-8 col-xs-offset-2">
         <div class="row">
           <div class="col-xs-12" style="margin-top:10px;">
             <button type="button" id="run" class="btn btn-default btn-success"><span class="fui-play"></span></button>
             <button type="button" id="step" class="btn btn-default btn-primary"><span class="fui-arrow-right"></span></button>
-            <button type="button" id="pause" class="btn btn-default btn-warning" disabled><span class="fui-pause"></span></button>
-            <hr/>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-12">
+            <button type="button" id="pause" class="btn btn-default btn-warning mrl" disabled><span class="fui-pause"></span></button>
+            
             <div class="btn-group" role="toolbar" aria-label="toolbar">
-            <button type="button" id="pencil" class="btn btn-default btn-info" disabled><span class="icon-pencil"></span></button>
-            <button type="button" id="eraser" class="btn btn-default btn-inverse"><span class="icon-eraser"></span></button>
-            <button type="button" id="clear" class="btn btn-default btn-danger"><span class="icon-clear"></span></button>
+            <button type="button" id="pencil" class="btn btn-default btn-info" disabled>
+              <span class="icon-pencil"></span>
+            </button>
+            <button type="button" id="eraser" class="btn btn-default btn-inverse">
+              <span class="icon-eraser"></span>
+            </button>
+            <button type="button" id="clear" class="btn btn-default btn-danger">
+              <span class="icon-clear"></span>
+            </button>
             </div>
             <hr/>
           </div>
         </div>
+
         <div class="row">
           <div class="col-xs-12">
             <label style="margin-top:0px;">Speed</label>
             <div id="slider" class="ui-slider"></div>
+            
+            <label style="margin-top:0px;" class="mrl">Grid</label>
+            <input type="checkbox" checked data-toggle="switch" name="default-switch-colors" data-on-color="primary" data-off-color="default" id="grid-switch" />
             <hr/>
           </div>
         </div>
+
         <div class="row">
           <div class="col-xs-12">
-            <label style="margin-top:10px;" class="mrl">Grid</label>
-            <input type="checkbox" checked data-toggle="switch" name="default-switch-colors" data-on-color="primary" data-off-color="default" id="grid-switch" />
+            <select class="form-control select select-primary select-block" disabled>
+              <optgroup label="Game of Life">
+                <option value="0" selected>Gospel Glider Gun</option>
+                <option value="1">Spaceships</option>
+              </optgroup>
+            </select>
+            <hr/>
           </div>
         </div>
-      </div>
-      <!-- End of Controls and Tools -->
+
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="row">
+              <div class="col-lg-6 col-md-6 col-sm-6" style="margin-bottom:5px;">
+                <div class="input-group">
+                  <span class="input-group-addon input-sm">B</span>
+                  <input type="text" class="form-control input-sm" placeholder="B(orn)" value="2, 3" disabled />
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6 col-sm-6">
+                <div class="input-group">
+                  <span class="input-group-addon input-sm">S</span>
+                  <input type="text" class="form-control input-sm" placeholder="S(tay) alive" value="3" disabled />
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <select class="form-control select select-primary select-block">
+                  <option value="0" selected>Game of Life</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div> <!-- End of Controls and Tools -->
+      
     </div> <!-- END core content row -->
 
     <div class="row"> <!-- About row -->

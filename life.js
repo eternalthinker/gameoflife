@@ -231,11 +231,11 @@ $(document).ready(function() {
         // Life appearance variables
         this.w = 750;
         this.h = 600;
-        this.cellSize = 6;
+        this.cellSize = 5;
         this.cellColor = '#000000';
         this.gridColor = '#CCCCCC';
         this.bgColor = '#FFFFFF';
-        this.gridStroke = 1;
+        this.gridStroke = 0.5;
         this.frameDelay = 70; // ms
         this.frameTimer;
 
@@ -280,6 +280,8 @@ $(document).ready(function() {
             else {
                 var point = this.getPixelpoint(this.world_cnvs.relMouseCoords(event));
                 if (this.curTool === this.Tool.PENCIL) {
+                    var ievent = this.world_cnvs.relMouseCoords(event);
+                    console.log ("(" + ievent.x + ", " + ievent.y + ") -> " + "(" + point.x + ", " + point.y + ")");
                     if (! this.life.get(point.x, point.y)) {
                         this.setCell(point.x, point.y);
                     } else {
@@ -434,6 +436,7 @@ $(document).ready(function() {
     }
 
     // Actions
+    $('select').select2();
     HTMLCanvasElement.prototype.relMouseCoords = relMouseCoords;
     var ui = new Ui();
 
