@@ -396,6 +396,13 @@ $(document).ready(function() {
     }
     /* ================== End of Ui class ================ */
 
+    // Compatibility fix
+    if (String.prototype.repeat === undefined) {
+        String.prototype.repeat = function(num)
+        {
+            return new Array(num + 1).join(this);
+        }
+    }
 
     // Add segments to a slider
     $.fn.addSliderSegments = function (amount, orientation) {
@@ -408,8 +415,8 @@ $(document).ready(function() {
             };
             $(this).prepend(output);
             } else {
-                var segmentGap = 100 / (amount - 1) + "%"
-                , segment = '<div class="ui-slider-segment" style="margin-left: ' + segmentGap + ';"></div>';
+                var segmentGap = 100 / (amount - 1) + "%";
+                var segment = '<div class="ui-slider-segment" style="margin-left: ' + segmentGap + ';"></div>';
                 $(this).prepend(segment.repeat(amount - 2));
             }
         });
