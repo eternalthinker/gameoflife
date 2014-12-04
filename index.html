@@ -63,7 +63,8 @@
       <div class="col-lg-8 col-md-12 col-sm-12">
         <div class="row">
           <div class="col-xs-12">
-            <div id="canvas-container" class="center-block" style="position:relative; height:600px; width:750px; border:0.5px solid #CCCCCC;">
+            <!-- Extra 2px padding in container below, to account for border overlay -->
+            <div id="canvas-container" class="center-block" style="position:relative; height:602px; width:752px; border:1px solid #CCCCCC;">
               <canvas id="grid" height="600" width="750" style="position:absolute; top:0; left:0; z-index:2;"></canvas>
               <canvas id="world" height="600" width="750" style="position:absolute; top:0; left:0; z-index:1;"></canvas>
             </div>
@@ -116,6 +117,7 @@
 
         <div class="row">
           <div class="col-xs-12">
+            <label style="margin-top:0px;" class="mrl">Life forms</label>
             <select class="form-control select select-primary select-block" disabled>
               <optgroup label="Game of Life">
                 <option value="0" selected>Gospel Glider Gun</option>
@@ -129,26 +131,29 @@
         <div class="row">
           <div class="col-xs-12">
             <div class="row">
-              <div class="col-lg-6 col-md-6 col-sm-6" style="margin-bottom:5px;">
-                <div class="input-group">
-                  <span class="input-group-addon input-sm">B</span>
-                  <input type="text" class="form-control input-sm" placeholder="B(orn)" value="2, 3" disabled />
-                </div>
-              </div>
-              <div class="col-lg-6 col-md-6 col-sm-6">
-                <div class="input-group">
-                  <span class="input-group-addon input-sm">S</span>
-                  <input type="text" class="form-control input-sm" placeholder="S(tay) alive" value="3" disabled />
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-xs-12">
+              <div class="col-xs-12" style="margin-bottom:5px;">
+                <label style="margin-top:0px;" class="mrl">Switch Rules</label>
                 <select class="form-control select select-primary select-block">
                   <option value="0" selected>Game of Life</option>
                 </select>
               </div>
             </div>
+
+            <div class="row">
+              <div class="col-lg-6 col-md-6 col-sm-6">
+                <div class="input-group">
+                  <span class="input-group-addon input-sm">B</span>
+                  <input type="text" class="form-control input-sm" placeholder="B(orn)" value="3" disabled />
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6 col-sm-6">
+                <div class="input-group">
+                  <span class="input-group-addon input-sm">S</span>
+                  <input type="text" class="form-control input-sm" placeholder="S(tay) alive" value="2, 3" disabled />
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
 

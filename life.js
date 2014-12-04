@@ -263,7 +263,11 @@ $(document).ready(function() {
     }
 
     Ui.prototype.getPixelpoint = function (coords) {
-        return { x: Math.floor(coords.x/this.cellSize), y: Math.floor(coords.y/this.cellSize) };
+        //return { x: Math.floor(coords.x/this.cellSize), y: Math.floor(coords.y/this.cellSize) };
+        // Fine tuning pixel drawing at edges: (10,10) -> (1,1) for cellSize=5
+        return { x: Math.floor(coords.x/this.cellSize) - (coords.x%this.cellSize?0:1), 
+                 y: Math.floor(coords.y/this.cellSize) - (coords.y%this.cellSize?0:1) 
+               };
     }
 
     Ui.prototype.onMouseDown = function (event) {
@@ -282,7 +286,7 @@ $(document).ready(function() {
                 var point = this.getPixelpoint(this.world_cnvs.relMouseCoords(event));
                 if (this.curTool === this.Tool.PENCIL) {
                     var ievent = this.world_cnvs.relMouseCoords(event);
-                    console.log ("(" + ievent.x + ", " + ievent.y + ") -> " + "(" + point.x + ", " + point.y + ")");
+                    //console.log ("(" + ievent.x + ", " + ievent.y + ") -> " + "(" + point.x + ", " + point.y + ")");
                     if (! this.life.get(point.x, point.y)) {
                         this.setCell(point.x, point.y);
                     } else {
