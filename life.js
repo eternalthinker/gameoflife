@@ -163,9 +163,10 @@ $(document).ready(function() {
 
 
     /* ================== Ui class ================ */
-    function Ui (Rules, Lifeforms) {
+    function Ui (Rules, Lifeforms, Palettes) {
         this.Rules = Rules;
         this.Lifeforms = Lifeforms;
+        this.Palettes = Palettes;
 
         // Ui components
         this.$run_btn = $('#run');
@@ -176,6 +177,7 @@ $(document).ready(function() {
         this.$clear_btn = $('#clear');
         this.$slider_ui = $('#slider');
         this.slider_values = [1000, 120, 70, 10, 1];
+        this.$trace_chk = $('#trace-switch');
         this.$grid_chk = $('#grid-switch');
         this.$grid_cnvs = $('#grid');
         this.$world_cnvs = $('#world');
@@ -214,6 +216,13 @@ $(document).ready(function() {
             }, this)
           }).addSliderSegments(this.$slider_ui.slider("option").max);
         }
+        $('#palette').click($.proxy(function () {
+            this.rotatePalette();
+        }, this));
+        this.$trace_chk.bootstrapSwitch('state', true);
+        this.$trace_chk.on('switchChange.bootstrapSwitch', $.proxy(function (event, state) {
+          this.trace = state;
+        }, this));
         this.$grid_chk.bootstrapSwitch('state', true);
         this.$grid_chk.on('switchChange.bootstrapSwitch', $.proxy(function (event, state) {
           if (state) {
@@ -254,13 +263,8 @@ $(document).ready(function() {
         this.cellColor = '#000000';
         this.gridColor = '#CCCCCC';
         this.bgColor = '#FFFFFF';
-        this.Palette = Object.freeze({
-            1 : '#aaa',
-            2 : '#bbb',
-            3 : '#ccc',
-            4 : '#ddd',
-            5 : '#eee'
-        });
+        this.palette_idx = 0;
+        this.Palette = this.Palettes[this.palette_idx];
         this.gridStroke = 0.5;
         this.frameDelay = 70; // ms
         this.frameTimer;
@@ -276,6 +280,7 @@ $(document).ready(function() {
         this.rows = this.h / this.cellSize;
         this.cols = this.w / this.cellSize;
         this.rule = "GAME_OF_LIFE";
+        this.trace = true;
 
         // Actions
         this.$rules_sel.select2('val', this.rule);
@@ -289,6 +294,11 @@ $(document).ready(function() {
         this.setRule (this.rule);
         this.life.load(this.Lifeforms["GOSPER_GLIDER_GUN"]);
         this.paint();
+    }
+
+    Ui.prototype.rotatePalette = function () {
+        this.palette_idx = (this.palette_idx + 1) % this.Palettes.length;
+        this.Palette = this.Palettes[this.palette_idx];
     }
 
     Ui.prototype.setRule = function (rulename) {
@@ -408,7 +418,7 @@ $(document).ready(function() {
                     this.world_ui.rect(x*this.cellSize, y*this.cellSize, this.cellSize, this.cellSize);
                     this.world_ui.fill();
                 }
-                else if (cell.age < 0) {
+                else if (this.trace && cell.age < 0) {
                     this.world_ui.fillStyle = this.Palette[-cell.age];
                     this.world_ui.beginPath();
                     this.world_ui.rect(x*this.cellSize, y*this.cellSize, this.cellSize, this.cellSize);
@@ -454,6 +464,12 @@ $(document).ready(function() {
         "MAZE"                  : { B:[3], S:[1, 2, 3, 4, 5] },
         "SEEDS"                 : { B:[2], S:[] },
     });
+
+    var Palettes = [
+        ['', '#aaa', '#bbb', '#ccc', '#ddd', '#eee'],
+        ['', '#F78181', '#F5A9A9', '#F6CECE', '#F8E0E0', '#FBEFEF'],
+        ['', '#81BEF7', '#A9D0F5', '#CEE3F6', '#E0ECF8', '#EFF5FB']
+    ];
 
     var Lifeforms = Object.freeze({
         GOSPER_GLIDER_GUN: [
@@ -517,6 +533,6 @@ $(document).ready(function() {
 
     // Actions
     HTMLCanvasElement.prototype.relMouseCoords = relMouseCoords;
-    var ui = new Ui(Rules, Lifeforms);
+    var ui = new Ui(Rules, Lifeforms, Palettes);
 
 });

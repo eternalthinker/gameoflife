@@ -64,7 +64,7 @@
         <div class="row">
           <div class="col-xs-12">
             <!-- Extra 2px padding in container below, to account for border overlay -->
-            <div id="canvas-container" class="center-block" style="position:relative; height:602px; width:752px; border:1px solid #CCCCCC;">
+            <div id="canvas-container" class="center-block" style="position:relative; height:602px; width:752px; border:1px dotted #CCCCCC;">
               <canvas id="grid" height="600" width="750" style="position:absolute; top:0; left:0; z-index:2;"></canvas>
               <canvas id="world" height="600" width="750" style="position:absolute; top:0; left:0; z-index:1;"></canvas>
             </div>
@@ -109,8 +109,13 @@
             <label style="margin-top:0px;">Speed</label>
             <div id="slider" class="ui-slider"></div>
             
-            <label style="margin-top:0px;" class="mrl">Grid</label>
-            <input type="checkbox" checked data-toggle="switch" name="default-switch-colors" data-on-color="primary" data-off-color="default" id="grid-switch" />
+            <label style="margin-top:0px;" class="mrdl">Grid</label>
+            <input type="checkbox" checked data-toggle="switch" name="default-switch-colors" data-on-color="primary" data-off-color="default" id="grid-switch"/>
+
+            <label style="margin-top:0px;" class="mll">Trace</label>
+            <input type="checkbox" checked data-toggle="switch" name="default-switch-colors" data-on-color="primary" data-off-color="default" id="trace-switch" />
+
+            <button type="button" id="palette" class="btn btn-default btn-primary btn-sm mll"><span class="fui-gear"></span></button>
             <hr/>
           </div>
         </div>
