@@ -60,6 +60,7 @@ $(document).ready(function() {
 
     Life.prototype.unset = function (x, y) {
         this.world[x][y].alive = false;
+        this.world[x][y].age = -1;
     }
 
     Life.prototype.setRule = function (rule) {
@@ -222,6 +223,9 @@ $(document).ready(function() {
         this.$trace_chk.bootstrapSwitch('state', true);
         this.$trace_chk.on('switchChange.bootstrapSwitch', $.proxy(function (event, state) {
           this.trace = state;
+          if (this.halt) {
+            this.paint();
+          }
         }, this));
         this.$grid_chk.bootstrapSwitch('state', true);
         this.$grid_chk.on('switchChange.bootstrapSwitch', $.proxy(function (event, state) {
@@ -281,6 +285,7 @@ $(document).ready(function() {
         this.cols = this.w / this.cellSize;
         this.rule = "GAME_OF_LIFE";
         this.trace = true;
+        this.halt = true;
 
         // Actions
         this.$rules_sel.select2('val', this.rule);
@@ -299,6 +304,9 @@ $(document).ready(function() {
     Ui.prototype.rotatePalette = function () {
         this.palette_idx = (this.palette_idx + 1) % this.Palettes.length;
         this.Palette = this.Palettes[this.palette_idx];
+        if (this.halt) {
+            this.paint();
+        }
     }
 
     Ui.prototype.setRule = function (rulename) {
@@ -370,6 +378,7 @@ $(document).ready(function() {
     Ui.prototype.setCell = function (x, y) {
         if (this.life.get(x,y).alive) return;
         this.life.set(x, y);
+        this.world_ui.fillStyle = this.cellColor;
         this.world_ui.beginPath();
         this.world_ui.rect(x*this.cellSize, y*this.cellSize, this.cellSize, this.cellSize);
         this.world_ui.fill();
@@ -378,7 +387,15 @@ $(document).ready(function() {
     Ui.prototype.unsetCell = function (x, y) {
         if (! this.life.get(x,y).alive) return;
         this.life.unset(x, y);
-        this.world_ui.clearRect(x*this.cellSize, y*this.cellSize, this.cellSize, this.cellSize);
+        if (this.trace) {
+            this.world_ui.fillStyle = this.Palette[1]; // Age always -1 after unset()
+            this.world_ui.beginPath();
+            this.world_ui.rect(x*this.cellSize, y*this.cellSize, this.cellSize, this.cellSize);
+            this.world_ui.fill();
+        }
+        else {
+            this.world_ui.clearRect(x*this.cellSize, y*this.cellSize, this.cellSize, this.cellSize);
+        }
     }
 
     Ui.prototype.clearWorld = function (x, y) {
@@ -393,6 +410,7 @@ $(document).ready(function() {
         this.$run_btn.prop('disabled', true);
         this.$step_btn.prop('disabled', true);
         this.$pause_btn.prop('disabled', false);
+        this.halt = false;
     }
 
     Ui.prototype.step_update = function () {
@@ -405,6 +423,7 @@ $(document).ready(function() {
         this.$run_btn.prop('disabled', false);
         this.$step_btn.prop('disabled', false);
         this.$pause_btn.prop('disabled', true);
+        this.halt = true;
     }
 
     Ui.prototype.paint = function () {
