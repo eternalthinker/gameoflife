@@ -17,25 +17,21 @@ $(document).ready(function() {
         this.alive = false;
     }
     
-    function Life (rows, cols) {
-        this.B = [3]; // B(orn)
-        this.S = [2, 3]; // S(tay alive)
+    function Life (rows, cols, rule) {
+        if (rule) {
+            this.B = rule.B; // B(orn)
+            this.S = rule.S; // S(tay alive)
+        } else {
+            this.B = [3]; // B(orn)
+            this.S = [2, 3]; // S(tay alive)
+        }
+        
         this.rows = rows;
         this.cols = cols;
         this.world = [];
         this.world2 = [];
         this.generation = 0;
         this.population = 0;
-
-        this.Lifeforms = Object.freeze({
-            GOSPER_GLIDER_GUN: [
-                [1, 5],[1, 6],[2, 5],[2, 6],[11, 5],[11, 6],[11, 7],[12, 4],
-                [12, 8],[13, 3],[13, 9],[14, 3],[14, 9],[15, 6],[16, 4],[16, 8],
-                [17, 5],[17, 6],[17, 7],[18, 6],[21, 3],[21, 4],[21, 5],[22, 3],
-                [22, 4],[22, 5],[23, 2],[23, 6],[25, 1],[25, 2],[25, 6],[25, 7],
-                [35, 3],[35, 4],[36, 3],[36, 4]
-            ]
-        });
 
         // Actions
         this.init();
@@ -63,6 +59,11 @@ $(document).ready(function() {
 
     Life.prototype.unset = function (x, y) {
         this.world[x][y].alive = false;
+    }
+
+    Life.prototype.setRule = function (rule) {
+        this.B = rule.B;
+        this.S = rule.S;
     }
 
     Life.prototype.clear = function () {
@@ -144,9 +145,8 @@ $(document).ready(function() {
     }
         
     Life.prototype.load = function (lifeForm) {
-        var lifeDef = this.Lifeforms[lifeForm];
         this.population = 0;
-        lifeDef.forEach(function(point) {
+        lifeForm.forEach(function(point) {
             this.world[point[0]][point[1]].alive = true;
             this.population++;
         }, this);
@@ -155,7 +155,10 @@ $(document).ready(function() {
 
 
     /* ================== Ui class ================ */
-    function Ui () {
+    function Ui (Rules, Lifeforms) {
+        this.Rules = Rules;
+        this.Lifeforms = Lifeforms;
+
         // Ui components
         this.$run_btn = $('#run');
         this.$step_btn = $('#step');
@@ -171,6 +174,9 @@ $(document).ready(function() {
         this.world_cnvs = $('#world').get(0);
         this.$generation_ui = $('#generation');
         this.$population_ui = $('#population');
+        this.$rules_sel = $('#rules');
+        this.$brule_ip = $('#b-rule');
+        this.$srule_ip = $('#s-rule');
 
         // Ui component handlers
         this.$run_btn.click($.proxy(this.run, this));
@@ -207,6 +213,11 @@ $(document).ready(function() {
           } else {
             this.$grid_cnvs.hide();
           }
+        }, this));
+
+        $('select').select2();
+        this.$rules_sel.on('change', $.proxy(function (event) {
+            this.setRule(event.val);
         }, this));
 
         // Mouse handlers
@@ -249,17 +260,27 @@ $(document).ready(function() {
 
         this.rows = this.h / this.cellSize;
         this.cols = this.w / this.cellSize;
+        this.rule = "GAME_OF_LIFE";
 
         // Actions
+        this.$rules_sel.select2('val', this.rule);
         this.$run_btn.prop('disabled', false);
         this.$step_btn.prop('disabled', false);
         this.$pause_btn.prop('disabled', true);
         this.$pencil_btn.prop('disabled', true);
         this.$eraser_btn.prop('disabled', false);
         this.paintGrid();
-        this.life = new Life (this.rows, this.cols);
-        this.life.load("GOSPER_GLIDER_GUN");
+        this.life = new Life (this.rows, this.cols, null);
+        this.setRule (this.rule);
+        this.life.load(this.Lifeforms["GOSPER_GLIDER_GUN"]);
         this.paint();
+    }
+
+    Ui.prototype.setRule = function (rulename) {
+        var rule = this.Rules[rulename];
+        this.life.setRule(rule);
+        this.$brule_ip.val(rule.B.join(''));
+        this.$srule_ip.val(rule.S.join(''));
     }
 
     Ui.prototype.getPixelpoint = function (coords) {
@@ -338,7 +359,7 @@ $(document).ready(function() {
     Ui.prototype.clearWorld = function (x, y) {
         this.pause();
         this.life.clear();
-        this.life.load("GOSPER_GLIDER_GUN");
+        this.life.load(this.Lifeforms["GOSPER_GLIDER_GUN"]);
         this.paint();
     }
 
@@ -401,6 +422,29 @@ $(document).ready(function() {
     }
     /* ================== End of Ui class ================ */
 
+
+    /* ================== Essential definitions ================ */
+    var Rules = Object.freeze({
+        "GAME_OF_LIFE"          : { B:[3], S:[2, 3] },
+        "LIFE_WITHOUT_DEATH"    : { B:[3], S:[1, 2, 3, 4, 5, 6, 7, 8] },
+        "HIGHLIFE"             : { B:[3, 6], S:[2, 3] },
+        "MAZE"                  : { B:[3], S:[1, 2, 3, 4, 5] },
+        "SEEDS"                 : { B:[2], S:[] },
+    });
+
+    var Lifeforms = Object.freeze({
+        GOSPER_GLIDER_GUN: [
+        [1, 5],[1, 6],[2, 5],[2, 6],[11, 5],[11, 6],[11, 7],[12, 4],
+        [12, 8],[13, 3],[13, 9],[14, 3],[14, 9],[15, 6],[16, 4],[16, 8],
+        [17, 5],[17, 6],[17, 7],[18, 6],[21, 3],[21, 4],[21, 5],[22, 3],
+        [22, 4],[22, 5],[23, 2],[23, 6],[25, 1],[25, 2],[25, 6],[25, 7],
+        [35, 3],[35, 4],[36, 3],[36, 4]
+        ]
+    });
+    /* ================== End of Essential definitions ================ */
+
+
+    /* ================== Utilities ================ */
     // Compatibility fix
     if (String.prototype.repeat === undefined) {
         String.prototype.repeat = function(num)
@@ -446,10 +490,10 @@ $(document).ready(function() {
 
         return {x:canvasX, y:canvasY};
     }
+    /* ================== End of Utilities ================ */
 
     // Actions
-    $('select').select2();
     HTMLCanvasElement.prototype.relMouseCoords = relMouseCoords;
-    var ui = new Ui();
+    var ui = new Ui(Rules, Lifeforms);
 
 });

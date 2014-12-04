@@ -13,6 +13,7 @@ A JavaScript implementation of Conway's Game of Life
 - [ ] Lifeform load selection
 - [ ] More complex coloring patterns based on generations
 - [x] Advanced fluid ability to draw cells
-- [ ] Ability to change B/S automata rule
+- [x] Ability to change B/S automata rule
+- [ ] Allow custom B/S rule input
 - [ ] Info and background
 

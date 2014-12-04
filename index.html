@@ -132,9 +132,13 @@
           <div class="col-xs-12">
             <div class="row">
               <div class="col-xs-12" style="margin-bottom:5px;">
-                <label style="margin-top:0px;" class="mrl">Switch Rules</label>
-                <select class="form-control select select-primary select-block">
-                  <option value="0" selected>Game of Life</option>
+                <label style="margin-top:0px;" class="mrl">Game Rules</label>
+                <select class="form-control select select-primary select-block" id="rules">
+                  <option value="GAME_OF_LIFE" selected>Game of Life</option>
+                  <option value="LIFE_WITHOUT_DEATH">Life without Death</option>
+                  <option value="HIGHLIFE">HighLife</option>
+                  <option value="MAZE">Maze</option>
+                  <option value="SEEDS">Seeds</option>
                 </select>
               </div>
             </div>
@@ -143,13 +147,13 @@
               <div class="col-lg-6 col-md-6 col-sm-6">
                 <div class="input-group">
                   <span class="input-group-addon input-sm">B</span>
-                  <input type="text" class="form-control input-sm" placeholder="B(orn)" value="3" disabled />
+                  <input type="text" id="b-rule" class="form-control input-sm" placeholder="None" value="3" disabled />
                 </div>
               </div>
               <div class="col-lg-6 col-md-6 col-sm-6">
                 <div class="input-group">
                   <span class="input-group-addon input-sm">S</span>
-                  <input type="text" class="form-control input-sm" placeholder="S(tay) alive" value="2, 3" disabled />
+                  <input type="text" id="s-rule" class="form-control input-sm" placeholder="None" value="23" disabled />
                 </div>
               </div>
             </div>
