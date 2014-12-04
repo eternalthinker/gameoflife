@@ -50,11 +50,12 @@ $(document).ready(function() {
     }
 
     Life.prototype.get = function (x, y) {
-        return this.world[x][y].alive;
+        return this.world[x][y];
     }
 
     Life.prototype.set = function (x, y) {
         this.world[x][y].alive = true;
+        this.world[x][y].age = 1;
     }
 
     Life.prototype.unset = function (x, y) {
@@ -122,16 +123,23 @@ $(document).ready(function() {
                         this.population++;
                     } else {
                         this.world2[x][y].alive = false;
+                        this.world2[x][y].age = -1; // Just died
                     }
                 }
                 else {
                     var find = this.B.indexOf(ncount);
                     if (find != -1) {
-                        this.world2[x][y].alive = true; 
+                        this.world2[x][y].alive = true;
+                        this.world2[x][y].age = 1; // It's alive!
                         this.population++;
                     } 
                     else {
                         this.world2[x][y].alive = false;
+                        var age = this.world[x][y].age;
+                        if (age < 0 && age > -5) { // Dead and rotting
+                            age--; 
+                        }
+                        this.world2[x][y].age = age;
                     }
                 }
             }
@@ -246,6 +254,13 @@ $(document).ready(function() {
         this.cellColor = '#000000';
         this.gridColor = '#CCCCCC';
         this.bgColor = '#FFFFFF';
+        this.Palette = Object.freeze({
+            1 : '#aaa',
+            2 : '#bbb',
+            3 : '#ccc',
+            4 : '#ddd',
+            5 : '#eee'
+        });
         this.gridStroke = 0.5;
         this.frameDelay = 70; // ms
         this.frameTimer;
@@ -308,7 +323,7 @@ $(document).ready(function() {
                 if (this.curTool === this.Tool.PENCIL) {
                     var ievent = this.world_cnvs.relMouseCoords(event);
                     //console.log ("(" + ievent.x + ", " + ievent.y + ") -> " + "(" + point.x + ", " + point.y + ")");
-                    if (! this.life.get(point.x, point.y)) {
+                    if (! this.life.get(point.x, point.y).alive) {
                         this.setCell(point.x, point.y);
                     } else {
                         this.unsetCell(point.x, point.y); // Live cell; click to unset
@@ -343,7 +358,7 @@ $(document).ready(function() {
     }
 
     Ui.prototype.setCell = function (x, y) {
-        if (this.life.get(x,y)) return;
+        if (this.life.get(x,y).alive) return;
         this.life.set(x, y);
         this.world_ui.beginPath();
         this.world_ui.rect(x*this.cellSize, y*this.cellSize, this.cellSize, this.cellSize);
@@ -351,7 +366,7 @@ $(document).ready(function() {
     }
 
     Ui.prototype.unsetCell = function (x, y) {
-        if (! this.life.get(x,y)) return;
+        if (! this.life.get(x,y).alive) return;
         this.life.unset(x, y);
         this.world_ui.clearRect(x*this.cellSize, y*this.cellSize, this.cellSize, this.cellSize);
     }
@@ -386,7 +401,15 @@ $(document).ready(function() {
         this.world_ui.clearRect(0, 0, this.w, this.h);
         for (var x = 0; x < this.cols; ++x) {
             for (var y = 0; y < this.rows; ++y) {
-                if (this.life.get(x,y)) {
+                var cell = this.life.get(x,y);
+                if (cell.alive) {
+                    this.world_ui.fillStyle = this.cellColor;
+                    this.world_ui.beginPath();
+                    this.world_ui.rect(x*this.cellSize, y*this.cellSize, this.cellSize, this.cellSize);
+                    this.world_ui.fill();
+                }
+                else if (cell.age < 0) {
+                    this.world_ui.fillStyle = this.Palette[-cell.age];
                     this.world_ui.beginPath();
                     this.world_ui.rect(x*this.cellSize, y*this.cellSize, this.cellSize, this.cellSize);
                     this.world_ui.fill();
