@@ -15,5 +15,5 @@ A JavaScript implementation of Conway's Game of Life
 - [x] Advanced fluid ability to draw cells
 - [x] Ability to change B/S automata rule
 - [ ] Allow custom B/S rule input
-- [ ] Info and background
+- [x] Info and background
 

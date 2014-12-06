@@ -479,7 +479,7 @@ $(document).ready(function() {
     var Rules = Object.freeze({
         "GAME_OF_LIFE"          : { B:[3], S:[2, 3] },
         "LIFE_WITHOUT_DEATH"    : { B:[3], S:[1, 2, 3, 4, 5, 6, 7, 8] },
-        "HIGHLIFE"             : { B:[3, 6], S:[2, 3] },
+        "HIGHLIFE"              : { B:[3, 6], S:[2, 3] },
         "MAZE"                  : { B:[3], S:[1, 2, 3, 4, 5] },
         "SEEDS"                 : { B:[2], S:[] },
     });

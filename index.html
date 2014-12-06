@@ -37,8 +37,8 @@
     <div class="container-fluid">
       <div class="navbar-header">
         <a class="navbar-brand" href="#">Game of Life</a>
-        <p class="navbar-text hidden-sm hidden-xs">A cellular automaton ideated by Conway</p>
-        <p class="navbar-text visible-sm-inline-block hidden-xs">A cellular automaton</p>
+        <p class="navbar-text hidden-sm hidden-xs">A cellular automata simulator</p>
+        <p class="navbar-text visible-sm-inline-block hidden-xs">Cellular automata fun!</p>
         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-navigation-collapse-content">
           <span class="sr-only">Toggle navigation</span>
           <span class="icon-bar"></span>
@@ -176,12 +176,49 @@
         <section>
           <h3>About</h3>
           <p>
-            Conway's <em>Game of Life</em> is a cellular automaton.
+            <em>Game of Life</em> is a cellular automaton devised by the British Mathematician John Horton Conway in 1970. 
+            <small><a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life" target="_blank">[Wikipedia link]</a></small><br>
+          </p>
+          <p>
+            Here the world consists of a grid of cells, with some of them being <em>alive</em>, or in an <em>on state</em>. 
+            A dead cell comes alive, or is <strong>B</strong>orn, if it has exactly 3 immediate live neighbours. Similarly, a live cell survives to the next generation, or
+            <strong>S</strong>tay alive, if it has 2 to 3 neighbours; It will die if the neighbour count in any lesser or greater. This is abbreviated as the 
+            <strong>B</strong>3/<strong>S</strong>23 rule.<br>
+          </p>
+          <p>
+            The game starts with an initial configuration of live cells, and evolves into different patterns in subsequent generations according to these simple rules.
+            Despite the short rules, the evolution of an initial pattern can be surprising.<br>
+            There are variations of <em>Game of Life</em>, created by changes in the B/S rule. Seemingly small changes in the rule can give rise to an evolution pattern
+            that is drastically different. There is the charmingly structured <em>Maze</em> and the explosive <em>Seeds</em>. For examples, check out other game rules in the above interface.
           </p>
         </section>
+
+        <section>
+          <h4>Life forms</h4>
+          <p>
+            There are several naturally occuring and cleverly engineered patterns disovered in different cellular automata rules. Static life forms which do not move, yet 
+            do not die out, life forms which are static yet <em>pulse</em> in their current position with various intervals, and Spaceships which are patterns which keep moving in one direction, not unlike what is imagined of spaceships.<br>
+            Check some examples in the above interface. Note that, a pattern shows its guaranteed behaviour only in its native set of rules.
+          </p>
+        </section>
+
+        <section>
+          <h4>Implementation Details</h4>
+          <p>
+            In the original definition, a cellular automaton consists of an infinite grid of cells, growing in all directions. Above implementation uses a toroidal grid,
+            meaning the top and bottom are virtually stitched together, and similarly the left and right sides. So a cell which moves past the right end, continues from the 
+            beginning of left end. This enables an infinite world of sorts, except that moving cells can collide with existing cells unlike an infinite universe.
+          </p>
+          <p>
+            The implementation also uses a naive implementation of rules. More optimized algorithms for <em>Game of Life</em> include Listlife and Hashlife.
+          </p>
+        </section>
+
       </article>
       </div>
     </div>
+
+    <div class="row" style="margin-top:40px"></div>
     </div> <!-- END main container -->
 
 </body>  
