@@ -475,33 +475,6 @@ $(document).ready(function() {
     /* ================== End of Ui class ================ */
 
 
-    /* ================== Essential definitions ================ */
-    var Rules = Object.freeze({
-        "GAME_OF_LIFE"          : { B:[3], S:[2, 3] },
-        "LIFE_WITHOUT_DEATH"    : { B:[3], S:[1, 2, 3, 4, 5, 6, 7, 8] },
-        "HIGHLIFE"              : { B:[3, 6], S:[2, 3] },
-        "MAZE"                  : { B:[3], S:[1, 2, 3, 4, 5] },
-        "SEEDS"                 : { B:[2], S:[] },
-    });
-
-    var Palettes = [
-        ['', '#aaa', '#bbb', '#ccc', '#ddd', '#eee'],
-        ['', '#F78181', '#F5A9A9', '#F6CECE', '#F8E0E0', '#FBEFEF'],
-        ['', '#81BEF7', '#A9D0F5', '#CEE3F6', '#E0ECF8', '#EFF5FB']
-    ];
-
-    var Lifeforms = Object.freeze({
-        GOSPER_GLIDER_GUN: [
-        [1, 5],[1, 6],[2, 5],[2, 6],[11, 5],[11, 6],[11, 7],[12, 4],
-        [12, 8],[13, 3],[13, 9],[14, 3],[14, 9],[15, 6],[16, 4],[16, 8],
-        [17, 5],[17, 6],[17, 7],[18, 6],[21, 3],[21, 4],[21, 5],[22, 3],
-        [22, 4],[22, 5],[23, 2],[23, 6],[25, 1],[25, 2],[25, 6],[25, 7],
-        [35, 3],[35, 4],[36, 3],[36, 4]
-        ]
-    });
-    /* ================== End of Essential definitions ================ */
-
-
     /* ================== Utilities ================ */
     // Compatibility fix
     if (String.prototype.repeat === undefined) {
@@ -548,10 +521,48 @@ $(document).ready(function() {
 
         return {x:canvasX, y:canvasY};
     }
+    HTMLCanvasElement.prototype.relMouseCoords = relMouseCoords;
     /* ================== End of Utilities ================ */
 
+    /* ================== Essential definitions ================ */
+    var Rules = Object.freeze({
+        "GAME_OF_LIFE"          : { B:[3], S:[2, 3] },
+        "LIFE_WITHOUT_DEATH"    : { B:[3], S:[1, 2, 3, 4, 5, 6, 7, 8] },
+        "HIGHLIFE"              : { B:[3, 6], S:[2, 3] },
+        "MAZE"                  : { B:[3], S:[1, 2, 3, 4, 5] },
+        "SEEDS"                 : { B:[2], S:[] },
+    });
+
+    var Palettes = [
+        ['', '#aaa', '#bbb', '#ccc', '#ddd', '#eee'],
+        ['', '#F78181', '#F5A9A9', '#F6CECE', '#F8E0E0', '#FBEFEF'],
+        ['', '#81BEF7', '#A9D0F5', '#CEE3F6', '#E0ECF8', '#EFF5FB']
+    ];
+
+    var Lifeforms = {};
+
+    var lifeformsData = [
+        'gosper_glider_gun',
+        'dragon_flotillae',
+        'weekender_tagalong'
+    ];
+    /* ================== End of Essential definitions ================ */
+
     // Actions
-    HTMLCanvasElement.prototype.relMouseCoords = relMouseCoords;
-    var ui = new Ui(Rules, Lifeforms, Palettes);
+    var rle = new Rle();
+    lifeformsData.forEach(function(filename) {
+        $.get("lifeforms/" + filename + ".rle", function (data) {
+            Lifeforms[filename.toUpperCase()] = rle.parse(data).points;
+        }, "text");
+    });
+
+    var ui;
+    $( document ).ajaxStop(function() {
+        ui = new Ui(Rules, Lifeforms, Palettes);
+    });
+    
+    //var points = rle.parse(null).points;
+    //ui.life.load(points);
+    //ui.paint();
 
 });
