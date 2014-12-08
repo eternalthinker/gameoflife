@@ -153,10 +153,12 @@ $(document).ready(function() {
         this.generation++;
     }
         
-    Life.prototype.load = function (lifeForm) {
+    Life.prototype.load = function (lifeFormData) {
+        var dx = lifeFormData.offsetX;
+        var dy = lifeFormData.offsetY;
         this.population = 0;
-        lifeForm.forEach(function(point) {
-            this.world[point[0]][point[1]].alive = true;
+        lifeFormData.points.forEach(function(point) {
+            this.world[point[0] + dx][point[1] + dy].alive = true;
             this.population++;
         }, this);
     }
@@ -186,6 +188,7 @@ $(document).ready(function() {
         this.$generation_ui = $('#generation');
         this.$population_ui = $('#population');
         this.$rules_sel = $('#rules');
+        this.$lifeform_sel = $('#lifeforms');
         this.$brule_ip = $('#b-rule');
         this.$srule_ip = $('#s-rule');
 
@@ -240,6 +243,11 @@ $(document).ready(function() {
         this.$rules_sel.on('change', $.proxy(function (event) {
             this.setRule(event.val);
         }, this));
+        this.$lifeform_sel.on('change', $.proxy(function (event) {
+            if (event.val !== "NONE") {
+                this.loadLifeform(event.val);
+            }
+        }, this));
 
         // Mouse handlers
         this.$grid_cnvs.mousedown($.proxy(function (event) { this.onMouseDown(event); }, this));
@@ -289,6 +297,7 @@ $(document).ready(function() {
 
         // Actions
         this.$rules_sel.select2('val', this.rule);
+        this.$lifeform_sel.select2('val', 'GOSPER_GLIDER_GUN');
         this.$run_btn.prop('disabled', false);
         this.$step_btn.prop('disabled', false);
         this.$pause_btn.prop('disabled', true);
@@ -314,6 +323,13 @@ $(document).ready(function() {
         this.life.setRule(rule);
         this.$brule_ip.val(rule.B.join(''));
         this.$srule_ip.val(rule.S.join(''));
+    }
+
+    Ui.prototype.loadLifeform = function (name) {
+        this.pause();
+        this.life.clear();
+        this.life.load(this.Lifeforms[name]);
+        this.paint();
     }
 
     Ui.prototype.getPixelpoint = function (coords) {
@@ -401,7 +417,7 @@ $(document).ready(function() {
     Ui.prototype.clearWorld = function (x, y) {
         this.pause();
         this.life.clear();
-        this.life.load(this.Lifeforms["GOSPER_GLIDER_GUN"]);
+        this.$lifeform_sel.select2('val', 'NONE');
         this.paint();
     }
 
@@ -478,7 +494,7 @@ $(document).ready(function() {
     /* ================== Utilities ================ */
     // Compatibility fix
     if (String.prototype.repeat === undefined) {
-        String.prototype.repeat = function(num)
+        String.prototype.repeat = function (num)
         {
             return new Array(num + 1).join(this);
         }
@@ -543,7 +559,8 @@ $(document).ready(function() {
 
     var lifeformsData = [
         'gosper_glider_gun',
-        'dragon_flotillae',
+        'dragon',
+        'snail',
         'weekender_tagalong'
     ];
     /* ================== End of Essential definitions ================ */
@@ -552,7 +569,7 @@ $(document).ready(function() {
     var rle = new Rle();
     lifeformsData.forEach(function(filename) {
         $.get("lifeforms/" + filename + ".rle", function (data) {
-            Lifeforms[filename.toUpperCase()] = rle.parse(data).points;
+            Lifeforms[filename.toUpperCase()] = rle.parse(data);
         }, "text");
     });
 
@@ -560,9 +577,5 @@ $(document).ready(function() {
     $( document ).ajaxStop(function() {
         ui = new Ui(Rules, Lifeforms, Palettes);
     });
-    
-    //var points = rle.parse(null).points;
-    //ui.life.load(points);
-    //ui.paint();
 
 });

@@ -124,10 +124,13 @@
         <div class="row">
           <div class="col-xs-12">
             <label style="margin-top:0px;" class="mrl">Life forms</label>
-            <select class="form-control select select-primary select-block" disabled>
+            <select class="form-control select select-primary select-block" id="lifeforms">
+              <option value="NONE">Select a lifeform to load</option>
               <optgroup label="Game of Life">
-                <option value="0" selected>Gospel Glider Gun</option>
-                <option value="1">Spaceships</option>
+                <option value="GOSPER_GLIDER_GUN">Gosper Glider Gun</option>
+                <option value="SNAIL">Snail</option>
+                <option value="DRAGON">Dragon</option>
+                <option value="WEEKENDER_TAGALONG">Weekender tagalong</option>
               </optgroup>
             </select>
             <hr/>
@@ -181,7 +184,7 @@
             <small><a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life" target="_blank">[Wikipedia link]</a></small><br>
           </p>
           <p>
-            Here the world consists of a grid of cells, with some of them being <em>alive</em>, or in an <em>on state</em>. 
+            Here the world consists of a grid of cells, with some of them being <em>alive</em>. 
             A dead cell comes alive, or is <strong>B</strong>orn, if it has exactly 3 immediate live neighbours. Similarly, a live cell survives to the next generation, or
             <strong>S</strong>tay alive, if it has 2 to 3 neighbours; It will die if the neighbour count in any lesser or greater. This is abbreviated as the 
             <strong>B</strong>3/<strong>S</strong>23 rule.<br>
@@ -211,7 +214,8 @@
             beginning of left end. This enables an infinite world of sorts, except that moving cells can collide with existing cells unlike an infinite universe.
           </p>
           <p>
-            The implementation also uses a naive implementation of rules. More optimized algorithms for <em>Game of Life</em> include Listlife and Hashlife.
+            The implementation also uses a naive implementation of rules. More optimized algorithms for <em>Game of Life</em> include Listlife and Hashlife.<br>
+            <em>PS: Turn off Trace (colored trail) in the interface if a crowded grid is making the simulation slower.</em>
           </p>
         </section>
 

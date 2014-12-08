@@ -1,5 +1,5 @@
 /*
- * Basic RLE parser in JavaScript 
+ * Basic RLE (Run Length Encoded cellular automata pattern file) parser in JavaScript 
  *
  * Author: Rahul Anand [ eternalthinker.co ], Dec 2014
  *
@@ -14,14 +14,6 @@ function Rle () {
 }
 
 Rle.prototype.parse = function (data) {
-    /* data = 
-    '#N Gosper glider gun\n' +
-    '#C This was the first gun discovered.\n' +
-    '#C As its name suggests, it was discovered by Bill Gosper.\n' +
-    'x = 36, y = 9, rule = B3/S23\n' +
-    '24bo$22bobo$12b2o6b2o12b2o$11bo3bo4b2o12b2o$2o8bo5bo3b2o$2o8bo3bob2o4b\n' +
-    'obo$10bo5bo7bo$11bo3bo$12b2o!'; */
-
     var headerPat = /\s*x\s*=\s*(-?\d+)\s*,\s*y\s*=\s*(-?\d+)(\s*,\s*rule\s*=\s*[Bb]([1-8]*)\/[Ss]([1-8]*))?/; // full, x, y, full_rule, B, S
     var namePat = /\s*#N(.*)/;
     var commentPat = /\s*#[Cc](.*)/;
@@ -34,7 +26,16 @@ Rle.prototype.parse = function (data) {
     //var nCols = header[1];
     //var cRows = header[2];
 
-    var points = [];
+    var offsetX = 0, offsetY = 0;
+    var offsets = refPat.exec(data);
+    if (offsets && offsets[1] !== undefined) {
+        offsetX = +offsets[1];
+    }
+    if (offsets && offsets[2] !== undefined) {
+        offsetY = +offsets[2];
+    }
+
+    var points = []; // The cells info is parsed to create a list of relative live coordinates
     var row = 0;
     var col = 0;
     var numtag;
@@ -46,7 +47,6 @@ Rle.prototype.parse = function (data) {
 
     numtag_loop: // label
     while (numtag = numtagPat.exec(data)) {
-        //console.log(numtag);
         var num = 1;
         numStr = numtag[3]; 
         if (numStr !== undefined) {
@@ -69,7 +69,6 @@ Rle.prototype.parse = function (data) {
                 break numtag_loop;
         }
     }
-    //console.log(points);
 
-    return { "points": points };
+    return { "points":points, "offsetX":offsetX, "offsetY":offsetY };
 }
