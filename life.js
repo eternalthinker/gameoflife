@@ -566,7 +566,11 @@ $(document).ready(function() {
         'gosper_glider_gun',
         'dragon',
         'snail',
-        'weekender_tagalong'
+        'weekender_tagalong',
+        'queen_bee_loop',
+        'gliders_by_the_dozen',
+        'bomber_predecessor',
+        'replicator'
     ];
     /* ================== End of Essential definitions ================ */
 
