@@ -3,17 +3,12 @@ Game of Life
 
 A JavaScript implementation of Conway's Game of Life
 
-*The working version can be viewed [here](http://eternalthinker.github.io/gameoflife)*
+*A working version can be viewed [**here**](http://eternalthinker.github.io/gameoflife)*
 
-**TODO:**
-
-- [x] Basic Life and Canvas drawing modules
-- [x] Essential Ui buttons and Info (generations etc)
-- [x] Ability to draw cells
-- [x] Lifeform load selection
-- [x] More complex coloring patterns based on generations
-- [x] Advanced fluid ability to draw cells
-- [x] Ability to change B/S automata rule
-- [ ] Allow custom B/S rule input
-- [x] Info and background
+##### Features
+* Toroidal 2D grid for simulation
+* Ability to draw cells on the grid
+* Ability to switch B/S game rule
+* Ability to load known cell patterns
+* Aesthetics like colored cell-history trace, toggle grid etc
 
