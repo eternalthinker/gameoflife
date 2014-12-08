@@ -9,6 +9,7 @@ A JavaScript implementation of Conway's Game of Life
 * Toroidal 2D grid for simulation
 * Ability to draw cells on the grid
 * Ability to switch B/S game rule
+* Ability to simulate custom (user-input) B/S rules 
 * Ability to load known cell patterns
 * Aesthetics like colored cell-history trace, toggle grid etc
 

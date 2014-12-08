@@ -241,7 +241,38 @@ $(document).ready(function() {
 
         $('select').select2();
         this.$rules_sel.on('change', $.proxy(function (event) {
-            this.setRule(event.val);
+            if (event.val !== "CUSTOM") {
+                this.setRule(event.val);
+            } 
+            else {
+                var curRule = this.Rules[this.rulename];
+                this.rule = { B: curRule.B.slice(0), S: curRule.S.slice(0) };
+                this.rulename = event.val;
+                this.$brule_ip.prop('disabled', false).parent().addClass('has-success');
+                this.$srule_ip.prop('disabled', false).parent().addClass('has-success');
+            }
+        }, this));
+        this.$brule_ip.on('input', $.proxy(function (event) {
+            var B = this.parseRule(this.$brule_ip.val());
+            if (B) {
+                this.rule.B = B;
+                this.life.setRule(this.rule);
+                this.$brule_ip.parent().removeClass('has-error').addClass('has-success');
+            }
+            else {
+                this.$brule_ip.parent().removeClass('has-success').addClass('has-error');
+            }
+        }, this));
+        this.$srule_ip.on('input', $.proxy(function (event) {
+            var S = this.parseRule(this.$srule_ip.val());
+            if (S) {
+                this.rule.S = S;
+                this.life.setRule(this.rule);
+                this.$srule_ip.parent().removeClass('has-error').addClass('has-success');
+            }
+            else {
+                this.$srule_ip.parent().removeClass('has-success').addClass('has-error');
+            }
         }, this));
         this.$lifeform_sel.on('change', $.proxy(function (event) {
             if (event.val !== "NONE") {
@@ -295,12 +326,15 @@ $(document).ready(function() {
 
         this.rows = this.h / this.cellSize;
         this.cols = this.w / this.cellSize;
-        this.rule = "GAME_OF_LIFE";
+        this.rulename = "GAME_OF_LIFE";
+        this.rule = { B:[], S:[] };
         this.trace = true;
         this.halt = true;
 
         // Actions
-        this.$rules_sel.select2('val', this.rule);
+        this.$rules_sel.select2('val', this.rulename);
+        this.$brule_ip.prop('disabled', true).parent().removeClass('has-error').removeClass('has-success');
+        this.$srule_ip.prop('disabled', true).parent().removeClass('has-error').removeClass('has-success');
         this.$lifeform_sel.select2('val', 'GOSPER_GLIDER_GUN');
         this.$run_btn.prop('disabled', false);
         this.$step_btn.prop('disabled', false);
@@ -309,7 +343,7 @@ $(document).ready(function() {
         this.$eraser_btn.prop('disabled', false);
         this.paintGrid();
         this.life = new Life (this.rows, this.cols, null);
-        this.setRule (this.rule);
+        this.setRule (this.rulename);
         this.life.load(this.Lifeforms["GOSPER_GLIDER_GUN"]);
         this.paint();
     }
@@ -322,11 +356,30 @@ $(document).ready(function() {
         }
     }
 
+    Ui.prototype.parseRule = function (value) {
+        var rulePat = /^\s*([0-8]{0,9})\s*$/; // full, rulenums
+        var ruleMatch = rulePat.exec(value);
+        if (! ruleMatch) return null;
+        var rule = ruleMatch[1];
+        var arr = [];
+        for (var i = 0; i < rule.length; ++i) {
+            var num = +rule[i];
+            if (arr.indexOf(num) != -1) return null;
+            arr.push(num);
+        }
+        return arr;
+    }
+
     Ui.prototype.setRule = function (rulename) {
         var rule = this.Rules[rulename];
         this.life.setRule(rule);
         this.$brule_ip.val(rule.B.join(''));
         this.$srule_ip.val(rule.S.join(''));
+        if (this.rulename === "CUSTOM") {
+            this.$brule_ip.prop('disabled', true).parent().removeClass('has-error').removeClass('has-success');
+            this.$srule_ip.prop('disabled', true).parent().removeClass('has-error').removeClass('has-success');
+        }
+        this.rulename = rulename;
     }
 
     Ui.prototype.loadLifeform = function (name) {
@@ -554,7 +607,6 @@ $(document).ready(function() {
     });
 
     var Palettes = [
-        //['', '#aaa', '#bbb', '#ccc', '#ddd', '#eee'],
         ['', '#BDBDBD', '#D8D8D8', '#E6E6E6', '#F2F2F2', '#FAFAFA'],
         ['', '#F78181', '#F5A9A9', '#F6CECE', '#F8E0E0', '#FBEFEF'],
         ['', '#81BEF7', '#A9D0F5', '#CEE3F6', '#E0ECF8', '#EFF5FB']
@@ -583,7 +635,7 @@ $(document).ready(function() {
     });
 
     var ui;
-    $( document ).ajaxStop(function() {
+    $(document).ajaxStop(function() {
         ui = new Ui(Rules, Lifeforms, Palettes);
     });
 
