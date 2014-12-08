@@ -179,7 +179,7 @@ $(document).ready(function() {
         this.$eraser_btn = $('#eraser');
         this.$clear_btn = $('#clear');
         this.$slider_ui = $('#slider');
-        this.slider_values = [1000, 120, 70, 10, 1];
+        this.slider_values = [1000, 250, 120, 70, 10];
         this.$trace_chk = $('#trace-switch');
         this.$grid_chk = $('#grid-switch');
         this.$grid_cnvs = $('#grid');
@@ -249,6 +249,10 @@ $(document).ready(function() {
             }
         }, this));
 
+        $(window).blur($.proxy(function () {
+            this.halt || this.pause();
+        }, this));
+
         // Mouse handlers
         this.$grid_cnvs.mousedown($.proxy(function (event) { this.onMouseDown(event); }, this));
         this.$grid_cnvs.mouseup($.proxy(function (event) { this.onMouseUp(event); }, this));
@@ -278,7 +282,7 @@ $(document).ready(function() {
         this.palette_idx = 0;
         this.Palette = this.Palettes[this.palette_idx];
         this.gridStroke = 0.5;
-        this.frameDelay = 70; // ms
+        this.frameDelay = 120; // ms
         this.frameTimer;
 
         this.world_ui = $('#world').get(0).getContext('2d');
@@ -550,7 +554,8 @@ $(document).ready(function() {
     });
 
     var Palettes = [
-        ['', '#aaa', '#bbb', '#ccc', '#ddd', '#eee'],
+        //['', '#aaa', '#bbb', '#ccc', '#ddd', '#eee'],
+        ['', '#BDBDBD', '#D8D8D8', '#E6E6E6', '#F2F2F2', '#FAFAFA'],
         ['', '#F78181', '#F5A9A9', '#F6CECE', '#F8E0E0', '#FBEFEF'],
         ['', '#81BEF7', '#A9D0F5', '#CEE3F6', '#E0ECF8', '#EFF5FB']
     ];

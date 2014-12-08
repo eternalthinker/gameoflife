@@ -1,5 +1,6 @@
 /*
  * Basic RLE (Run Length Encoded cellular automata pattern file) parser in JavaScript 
+ * See definition here: http://www.conwaylife.com/wiki/RLE
  *
  * Author: Rahul Anand [ eternalthinker.co ], Dec 2014
  *
@@ -14,15 +15,14 @@ function Rle () {
 }
 
 Rle.prototype.parse = function (data) {
-    var headerPat = /\s*x\s*=\s*(-?\d+)\s*,\s*y\s*=\s*(-?\d+)(\s*,\s*rule\s*=\s*[Bb]([1-8]*)\/[Ss]([1-8]*))?/; // full, x, y, full_rule, B, S
-    var namePat = /\s*#N(.*)/;
-    var commentPat = /\s*#[Cc](.*)/;
-    var authorPat = /\s*#O(.*)/;
+    //var headerPat = /\s*x\s*=\s*(-?\d+)\s*,\s*y\s*=\s*(-?\d+)(\s*,\s*rule\s*=\s*[Bb]([1-8]*)\/[Ss]([1-8]*))?/; // full, x, y, full_rule, B, S
+    //var namePat = /\s*#N(.*)/;
+    //var commentPat = /\s*#[Cc](.*)/;
+    //var authorPat = /\s*#O(.*)/;
     var refPat = /\s*#[RP]\s*(-?\d+)\s*(-?\d+)/; // full, x, y
     var numtagPat = /[\s^#]*(((\d+)?([bo$]))|!)/mg; // full, full, num_tag, num, tag
 
     //var header = headerPat.exec(data);
-    //console.log(header);
     //var nCols = header[1];
     //var cRows = header[2];
 
@@ -40,7 +40,7 @@ Rle.prototype.parse = function (data) {
     var col = 0;
     var numtag;
 
-    // Make sure we start at the beginning of cells info; Do not handle # lines in between this content
+    // Find the beginning of cells info; Do not handle # lines in between this content
     var numtagsBeginPat = /^(?=\s*[\dbo$!])/mg;
     numtagsBeginPat.exec(data);
     numtagPat.lastIndex = numtagsBeginPat.lastIndex;
