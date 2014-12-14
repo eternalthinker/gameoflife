@@ -1,5 +1,5 @@
 /*
- * Javascript implementation of Conway's Game of Life 
+ * Javascript implementation of Conway's Game of Life and other cellular automata
  *
  * Author: Rahul Anand [ eternalthinker.co ], Nov 2014
  *
