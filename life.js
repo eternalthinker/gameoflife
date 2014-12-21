@@ -577,6 +577,11 @@ $(document).ready(function() {
 
     // Retrieve mouse coordinates relative to the canvas element
     function relMouseCoords(event){
+        if (event.offsetX !== undefined && event.offsetY !== undefined) 
+        { 
+            return {x:event.offsetX, y:event.offsetY}; 
+        }
+
         var totalOffsetX = 0;
         var totalOffsetY = 0;
         var canvasX = 0;
